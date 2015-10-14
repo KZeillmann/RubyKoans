@@ -31,14 +31,43 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 
 def score(dice)
   total = 0
-  frequency_hash = { 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0 } 
+
+  frequency_hash = generate_frequency_hash(dice)
+
+  frequency_hash.each do |num, frequency|
+    total += calculate_score_for_one_num(num, frequency)
+  end
+  total
+end
+
+def generate_frequency_hash(dice)
+  frequency_hash = { 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0, 6 => 0 } 
   for roll in dice
     frequency_hash[roll] += 1
   end
-  
-  
-  
-  total
+  frequency_hash
+end
+
+def calculate_score_for_one_num(num, frequency)
+    if num == 1
+      if frequency >= 3
+        return 1000 + calculate_score_for_one_num(num, frequency-3)
+      else
+        return frequency * 100
+      end
+    elsif num == 5
+      if frequency >= 3
+        return 500 + calculate_score_for_one_num(num, frequency-3)
+      else
+        return frequency * 50
+      end
+    else
+      if frequency >=3
+        return 100 * num
+      else
+        return 0
+      end
+    end
 end
 
 class AboutScoringProject < Neo::Koan
